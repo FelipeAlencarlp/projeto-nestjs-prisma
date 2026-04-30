@@ -1,0 +1,31 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Order {
+  id      Int       @id @default(autoincrement())
+  total   Decimal   @db.Decimal(10, 2)
+  userId  Int
+  user    User      @relation(fields: [userId], references: [id])
+  products Product[]
+}
+
+model Product {
+  id    Int     @id @default(autoincrement())
+  name  String
+  price Decimal @db.Decimal(10, 2)
+  orders Order[]
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  name  String
+  email String  @unique
+  orders Order[]
+}
