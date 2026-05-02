@@ -15,11 +15,10 @@ export class IsUniqueEmailConstraint implements ValidatorConstraintInterface {
 
   async validate(value: string, args: ValidationArguments) {
     // Se não houver e-mail, não valida (deixe para @IsNotEmpty)
-    if (!value) return true;
+    if (!value) return true; 
     
-    // Verifica no banco se o usuário já existe
-    const userExists = await this.usersService.findOneByEmail(value);
-
+    const userExists = await this.usersService.findOneByEmail(value); 
+    
     return !userExists; // Retorna true se NÃO existir
   }
 
@@ -32,9 +31,9 @@ export function IsUniqueEmail(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
-      propertyName: propertyName,
+      propertyName,
       options: validationOptions,
-      constraints: [],
+      constraints: [object],
       validator: IsUniqueEmailConstraint,
     });
   };
