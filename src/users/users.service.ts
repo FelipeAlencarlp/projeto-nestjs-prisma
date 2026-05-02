@@ -54,4 +54,14 @@ export class UsersService {
             });
         });
     }
+
+    async delete(id: number) {
+        return await this.prisma.$transaction(async (tx) => {
+            const user = await this.findOne(id);
+
+            return await tx.user.delete({
+                where: { id: user.id }
+            });
+        });
+    }
 }
