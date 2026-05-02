@@ -32,10 +32,10 @@ export class UsersService {
         });
     }
 
-    async create(createUserDto: CreateUserDto) {
+    async create(dto: CreateUserDto) {
         return await this.prisma.$transaction(async (tx) => {
             return await tx.user.create({
-                data: { ...createUserDto }
+                data: { ...dto }
             });
         });
     }
