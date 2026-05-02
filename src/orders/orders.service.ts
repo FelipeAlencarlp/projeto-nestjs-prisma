@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Prisma, Order } from '../generated/prisma/client';
 
@@ -22,7 +22,7 @@ export class OrdersService {
             });
 
             if (!user) {
-                throw new Error(`Usuário com ID ${userId} não existe`);
+                throw new NotFoundException(`Usuário com ID ${userId} não existe`);
             }
             
             const products = await tx.product.findMany({
@@ -34,14 +34,14 @@ export class OrdersService {
             });
 
             if (products.length === 0) {
-                throw new Error('Não é possível criar uma ordem sem produto.');
+                throw new BadRequestException('Não é possível criar uma ordem sem produto.');
             }
 
             const idsExists = new Set(products.map(p => p.id));
             const invalidIds = productIds.filter(id => !idsExists.has(id));
 
             if (invalidIds.length > 0) {
-                throw new Error(
+                throw new BadRequestException(
                     `O(s) produto(s) com ID(s) ${invalidIds.join(', ')} não existe(m).`
                 );
             }
