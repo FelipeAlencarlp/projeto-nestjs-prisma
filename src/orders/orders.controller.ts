@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import {
+    Controller,
+    Body,
+    Get,
+    Param,
+    ParseIntPipe,
+    Post,
+    UseInterceptors
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { TransformInterceptor } from '../transform.interceptor';
@@ -14,10 +22,15 @@ export class OrdersController {
         return this.ordersService.findAll();
     }
 
+    @Get(':id')
+    async findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.ordersService.findOne(id);
+    }
+
     @Post()
-    async createOrder(@Body() createOrderDto: CreateOrderDto) {
-        return this.ordersService.createOrder(
-            createOrderDto.id, createOrderDto.productIds
+    async create(@Body() createOrderDto: CreateOrderDto) {
+        return this.ordersService.create(
+            createOrderDto.userId, createOrderDto.productIds
         );
     }
 }
