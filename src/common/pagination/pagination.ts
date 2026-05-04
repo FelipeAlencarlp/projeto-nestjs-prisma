@@ -1,9 +1,5 @@
 import { PaginatedResult } from "../types/paginated-result.type";
-
-type PaginationParams = {
-    page?: string;
-    limit?: string;
-}
+import { PaginationParams } from "../types/paginated-params.type";
 
 export async function paginate<T>(
     model: {

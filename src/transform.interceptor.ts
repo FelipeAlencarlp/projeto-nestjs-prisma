@@ -23,16 +23,16 @@ export class TransformInterceptor<T>
         next: CallHandler
     ): Observable<Response<T>> {
         const timestamp = new Date().toISOString();
-        
+
         return next
             .handle()
             .pipe(
                 map((data) => {
                     if (data.data && data?.meta) {
                         return {
-                        success: true,
-                        ...data,
-                        timestamp,
+                            success: true,
+                            ...data,
+                            timestamp,
                         };
                     }
 
