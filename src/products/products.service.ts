@@ -1,15 +1,31 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Product } from '../generated/prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { PaginatedResult } from '../common/types/paginated-result.type';
+import { paginate } from '../common/pagination/pagination';
 
 @Injectable()
 export class ProductsService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async findAll(): Promise<Product[]> {
-        return await this.prisma.product.findMany();
+    async findAll(
+        page: string,
+        limit: string,
+        filter?: string
+    ): Promise<PaginatedResult<Product>> {
+        const where = filter
+            ? {
+                name: { contains: filter, mode: 'insensitive' }
+              }
+            : {};
+
+        return paginate(
+            this.prisma.product,
+            { page, limit },
+            { where }
+        );
     }
 
     async findOne(id: number) {

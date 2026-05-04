@@ -15,7 +15,7 @@ import { User } from '../generated/prisma/client';
 import { TransformInterceptor } from '../transform.interceptor';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginatedResult } from 'src/common/types/paginated-result.type';
+import { PaginatedResult } from '../common/types/paginated-result.type';
 
 @Controller('users')
 @UseInterceptors(TransformInterceptor)

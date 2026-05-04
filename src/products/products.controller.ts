@@ -7,13 +7,15 @@ import {
     Body,
     Param,
     UseInterceptors,
-    ParseIntPipe
+    ParseIntPipe,
+    Query
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from '../generated/prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
 import { TransformInterceptor } from '../transform.interceptor';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { PaginatedResult } from '../common/types/paginated-result.type';
 
 @Controller('products')
 @UseInterceptors(TransformInterceptor)
@@ -21,8 +23,12 @@ export class ProductsController {
     constructor(private readonly productsService: ProductsService) {}
 
     @Get()
-    async findAll(): Promise<Product[]> {
-        return this.productsService.findAll();
+    async findAll(
+        @Query('page') page: string,
+        @Query('limit') limit: string,
+        @Query('filter') filter?: string
+    ): Promise<PaginatedResult<Product>> {
+        return this.productsService.findAll(page, limit, filter);
     }
 
     @Get(':id')

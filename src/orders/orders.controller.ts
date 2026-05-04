@@ -5,12 +5,14 @@ import {
     Param,
     ParseIntPipe,
     Post,
-    UseInterceptors
+    UseInterceptors,
+    Query
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { TransformInterceptor } from '../transform.interceptor';
 import { Order } from '../generated/prisma/client';
+import { PaginatedResult } from '../common/types/paginated-result.type';
 
 @Controller('orders')
 @UseInterceptors(TransformInterceptor)
@@ -18,8 +20,11 @@ export class OrdersController {
     constructor(private readonly ordersService: OrdersService) {}
 
     @Get()
-    async findAll(): Promise<Order[]> {
-        return this.ordersService.findAll();
+    async findAll(
+        @Query('page') page: string,
+        @Query('limit') limit: string
+    ): Promise<PaginatedResult<Order>> {
+        return this.ordersService.findAll(page, limit);
     }
 
     @Get(':id')

@@ -6,7 +6,7 @@ import { User } from '../generated/prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { paginate } from '../common/pagination/pagination';
-import { PaginatedResult } from 'src/common/types/paginated-result.type';
+import { PaginatedResult } from '../common/types/paginated-result.type';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +23,11 @@ export class UsersService {
               }
             : '';
 
-        return paginate(this.prisma.user, { page, limit }, { where });
+        return paginate(
+            this.prisma.user,
+            { page, limit },
+            { where }
+        );
     }
 
     async findOne(id: number) {

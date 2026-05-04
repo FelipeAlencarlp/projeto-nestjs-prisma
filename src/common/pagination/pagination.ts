@@ -10,6 +10,7 @@ export async function paginate<T>(
     options?: {
         where?: any;
         orderBy?: any;
+        include?: any;
     }
 ): Promise<PaginatedResult<T>> {
     const page = Math.max(parseInt(params.page || '1'), 1);
@@ -19,13 +20,15 @@ export async function paginate<T>(
 
     const where = options?.where || {};
     const orderBy = options?.orderBy || { id: 'asc' };
+    const include = options?.include;
 
     const [data, total] = await Promise.all([
         model.findMany({
             skip,
             take: limit,
             where,
-            orderBy
+            orderBy,
+            include
         }),
         model.count({ where })
     ]);

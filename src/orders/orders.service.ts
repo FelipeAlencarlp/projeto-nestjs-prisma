@@ -6,15 +6,19 @@ import {
 import { PrismaService } from '../prisma.service';
 import { Prisma, Order } from '../generated/prisma/client';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { paginate } from '../common/pagination/pagination';
+import { PaginatedResult } from '../common/types/paginated-result.type';
 
 @Injectable()
 export class OrdersService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async findAll(): Promise<Order[]> {
-        return this.prisma.order.findMany({
-            include: { user: true, products: true }
-        });
+    async findAll(page: string, limit: string): Promise<PaginatedResult<Order>> {
+        return paginate(
+            this.prisma.order,
+            { page, limit },
+            { include: { user: true, products: true } }
+        );
     }
 
     async findOne(id: number) {
