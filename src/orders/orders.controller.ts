@@ -23,14 +23,12 @@ export class OrdersController {
     }
 
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number) {
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<Order> {
         return this.ordersService.findOne(id);
     }
 
     @Post()
-    async create(@Body() createOrderDto: CreateOrderDto) {
-        return this.ordersService.create(
-            createOrderDto.userId, createOrderDto.productIds
-        );
+    async create(@Body() dto: CreateOrderDto): Promise<Order> {
+        return this.ordersService.create(dto);
     }
 }

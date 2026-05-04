@@ -26,12 +26,12 @@ export class UsersController {
     }
 
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number) {
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
         return this.usersService.findOne(id);
     }
 
     @Post()
-    async create(@Body() dto: CreateUserDto) {
+    async create(@Body() dto: CreateUserDto): Promise<User> {
         return this.usersService.create(dto);
     }
 
@@ -39,12 +39,12 @@ export class UsersController {
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() dto: UpdateUserDto
-    ) {
+    ): Promise<User> {
         return this.usersService.update(id, dto);
     }
 
     @Delete(':id')
-    async delete(@Param('id', ParseIntPipe) id: number) {
+    async delete(@Param('id', ParseIntPipe) id: number): Promise<User> {
         return this.usersService.delete(id);
     }
 }

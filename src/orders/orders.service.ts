@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Prisma, Order } from '../generated/prisma/client';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -31,8 +32,8 @@ export class OrdersService {
         return order;
     }
 
-    async findUser(id: number) {
-        const user = await this.prisma.user.findUnique({
+    async findUser(id: number, tx: any) {
+        const user = await tx.user.findUnique({
             where: { id }
         });
 
@@ -43,8 +44,8 @@ export class OrdersService {
         return user;
     }
 
-    async findProducts(ids: number[]) {
-        const products = await this.prisma.product.findMany({
+    async findProducts(ids: number[], tx: any) {
+        const products = await tx.product.findMany({
             where: {
                 id: {
                     in: ids
@@ -64,11 +65,17 @@ export class OrdersService {
         return products;
     }
 
-    async create(userId: number, productIds: number[]) {
+    async create(dto: CreateOrderDto) {
         // garantindo atômicidade - sucesso ou rollback
         return await this.prisma.$transaction(async (tx) => {
-            const user = await this.findUser(userId);
-            const products = await this.findProducts(productIds);
+            if (!dto.userId || !dto.productIds) {
+                throw new BadRequestException(
+                    'ID do usuário e ID de produto são Obrigatórios'
+                );
+            }
+
+            const user = await this.findUser(dto.userId, tx);
+            const products = await this.findProducts(dto.productIds, tx);
         
             const total = products.reduce(
                 (acc, item) => acc.plus(item.price),
@@ -79,12 +86,13 @@ export class OrdersService {
                 data: {
                     userId: user.id,
                     products: {
-                        connect: productIds.map(id => ({ id }))
+                        connect: products.map(p => ({ id: p.id }))
                                 // Transformando number[] em {id: number}[]
                     },
                     total: total
                 },
                 include: {
+                    user: true,
                     products: true
                 }
             });

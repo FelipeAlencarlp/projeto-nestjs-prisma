@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import {
     IsNumber,
     IsNotEmpty,
@@ -17,5 +18,6 @@ export class CreateOrderDto {
     @ArrayNotEmpty({ message: 'O Array não pode ser vazio.' })
     @ArrayMinSize(1, { message: 'É preciso pelo menos um ID de produto.' })
     @IsNumber({}, { each: true, message: 'O ID precisa ser número' })
+    @Type(() => Number)
     readonly productIds!: number[];
 }

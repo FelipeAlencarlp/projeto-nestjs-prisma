@@ -33,35 +33,33 @@ export class UsersService {
     }
 
     async create(dto: CreateUserDto) {
-        return await this.prisma.$transaction(async (tx) => {
-            return await tx.user.create({
-                data: { ...dto }
-            });
+        return await this.prisma.user.create({
+            data: { ...dto }
         });
     }
 
     async update(id: number, dto: UpdateUserDto) {
-        return await this.prisma.$transaction(async (tx) => {
+        if (dto.email) {
             const user = await this.findOneByEmail(dto.email);
 
             if (user && user.id !== id) {
-                throw new BadRequestException('Este e-mail já está sendo utilizado');
+                throw new BadRequestException(
+                    'Este e-mail já está sendo utilizado.'
+                );
             }
+        }
 
-            return await tx.user.update({
-                where: { id },
-                data: dto
-            });
+        return await this.prisma.user.update({
+            where: { id },
+            data: { ...dto }
         });
     }
 
     async delete(id: number) {
-        return await this.prisma.$transaction(async (tx) => {
-            const user = await this.findOne(id);
+        const user = await this.findOne(id);
 
-            return await tx.user.delete({
-                where: { id: user.id }
-            });
+        return await this.prisma.user.delete({
+            where: { id: user.id }
         });
     }
 }

@@ -25,31 +25,25 @@ export class ProductsService {
     }
 
     async create(dto: CreateProductDto) {
-        return await this.prisma.$transaction(async (tx) => {
-            return await tx.product.create({
-                data: { ...dto }
-            });
+        return await this.prisma.product.create({
+            data: { ...dto }
         });
     }
 
     async update(id: number, dto: UpdateProductDto) {
-        return await this.prisma.$transaction(async (tx) => {
-            const product = await this.findOne(id);
+        const product = await this.findOne(id);
 
-            return await tx.product.update({
-                where: { id: product.id },
-                data: dto
-            });
+        return await this.prisma.product.update({
+            where: { id: product.id },
+            data: dto
         });
     }
 
     async delete(id: number) {
-        return await this.prisma.$transaction(async (tx) => {
-            const product = await this.findOne(id);
+        const product = await this.findOne(id);
 
-            return await tx.product.delete({
-                where: { id: product.id }
-            });
+        return await this.prisma.product.delete({
+            where: { id: product.id }
         });
     }
 }

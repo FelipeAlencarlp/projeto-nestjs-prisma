@@ -26,12 +26,12 @@ export class ProductsController {
     }
 
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number) {
+    async findOne(@Param('id', ParseIntPipe) id: number): Promise<Product> {
         return this.productsService.findOne(id);
     }
 
     @Post()
-    async create(@Body() dto: CreateProductDto) {
+    async create(@Body() dto: CreateProductDto): Promise<Product> {
         return this.productsService.create(dto);
     }
 
@@ -39,12 +39,12 @@ export class ProductsController {
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() dto: UpdateProductDto
-    ) {
+    ): Promise<Product> {
         return this.productsService.update(id, dto);
     }
 
     @Delete(':id')
-    async delete(@Param('id', ParseIntPipe) id: number) {
+    async delete(@Param('id', ParseIntPipe) id: number): Promise<Product> {
         return this.productsService.delete(id);
     }
 }
