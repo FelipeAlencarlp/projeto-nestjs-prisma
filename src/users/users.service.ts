@@ -17,11 +17,13 @@ export class UsersService {
         limit: string,
         filter?: string
     ): Promise<PaginatedResult<User>> {
-        const where = filter
-            ? {
-                name: { contains: filter, mode: 'insensitive' } // case-insensitive
-              }
-            : '';
+        const where = {
+            deletedAt: null,
+            // se tiver filtro adiciona
+            ...(filter && {
+                name: { contains: filter, mode: 'insensitive' }
+            })
+        };
 
         return paginate(
             this.prisma.user,
@@ -32,7 +34,8 @@ export class UsersService {
 
     async findOne(id: number) {
         const user = await this.prisma.user.findUnique({
-            where: { id }
+            where: { id, deletedAt: null },
+            include: { orders: true }
         });
 
         if (!user) {
@@ -44,7 +47,7 @@ export class UsersService {
 
     async findOneByEmail(email: string) {
         return await this.prisma.user.findFirst({
-            where: { email }
+            where: { email, deletedAt: null }
         });
     }
 
@@ -71,11 +74,21 @@ export class UsersService {
         });
     }
 
-    async delete(id: number) {
+    async remove(id: number) {
         const user = await this.findOne(id);
 
-        return await this.prisma.user.delete({
-            where: { id: user.id }
+        return await this.prisma.user.update({
+            where: { id: user.id },
+            data: { deletedAt: new Date() }
+        });
+    }
+
+    async restore(id: number) {
+        const user = await this.findOne(id);
+
+        return await this.prisma.user.update({
+            where: { id: user.id },
+            data: { deletedAt: null }
         });
     }
 }
