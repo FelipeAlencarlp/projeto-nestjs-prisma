@@ -5,13 +5,25 @@ import { PrismaService } from '../prisma.service';
 import { User } from '../generated/prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { paginate } from '../common/pagination/pagination';
+import { PaginatedResult } from 'src/common/types/paginated-result.type';
 
 @Injectable()
 export class UsersService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async findAll(): Promise<User[]> {
-        return await this.prisma.user.findMany();
+    async findAll(
+        page: string,
+        limit: string,
+        filter?: string
+    ): Promise<PaginatedResult<User>> {
+        const where = filter
+            ? {
+                name: { contains: filter, mode: 'insensitive' } // case-insensitive
+              }
+            : '';
+
+        return paginate(this.prisma.user, { page, limit }, { where });
     }
 
     async findOne(id: number) {

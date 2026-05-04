@@ -22,14 +22,26 @@ export class TransformInterceptor<T>
         context: ExecutionContext,
         next: CallHandler
     ): Observable<Response<T>> {
+        const timestamp = new Date().toISOString();
+        
         return next
             .handle()
             .pipe(
-                map((data) => ({
-                    success: true,
-                    data: data,
-                    timestamp: new Date().toISOString()
-                })),
+                map((data) => {
+                    if (data.data && data?.meta) {
+                        return {
+                        success: true,
+                        ...data,
+                        timestamp,
+                        };
+                    }
+
+                    return {
+                        success: true,
+                        data,
+                        timestamp
+                    }
+                }),
                 catchError((err) => {
                     const status = err.status || 500;
 
@@ -42,7 +54,7 @@ export class TransformInterceptor<T>
                             {
                                 success: false,
                                 error: errResponse,
-                                timestamp: new Date().toISOString()
+                                timestamp
                             },
                             status
                         )
